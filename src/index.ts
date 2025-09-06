@@ -5,20 +5,24 @@ import { BASE_PROMPT, getSystemPrompt } from "./prompts";
 import { basePrompt as nodeBasePrompt } from "./defaults/node";
 import { basePrompt as reactBasePrompt } from "./defaults/react";
 import cors from "cors";
-
+const app = express();
 const apiKey = process.env.GEMINI_API_KEY;
 if (!apiKey) {
     throw new Error("GEMINI_API_KEY is not defined in the environment variables.");
 }
 const genAI = new GoogleGenerativeAI(apiKey);
 
-const app = express();
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://webistegenerator-frontend.onrender.com"
+];
+
 app.use(cors({
-    origin: "https://webistegenerator-frontend.onrender.com/",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
 }));
-app.use(express.json());
+
 
 // --- FIX: Define the handler as an explicitly typed constant ---
 const templateHandler: RequestHandler = async (req, res) => {
